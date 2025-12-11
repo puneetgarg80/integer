@@ -269,7 +269,8 @@
         .floor.active-lift::after {
             content: "📍";
             position: absolute;
-            right: 10px;
+            left: 10px;
+            /* Moved to left to avoid lift overlap */
             font-size: 1.2rem;
             animation: bounce 0.8s infinite;
         }
@@ -282,8 +283,59 @@
             }
 
             50% {
-                transform: translateX(-5px);
+                transform: translateX(5px);
             }
+        }
+
+        /* --- Lift Styles --- */
+        .lift-shaft {
+            position: absolute;
+            right: -60px;
+            /* Position to the right of the building */
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            background: rgba(0, 0, 0, 0.1);
+            border-left: 2px solid #555;
+            border-right: 2px solid #555;
+            z-index: 5;
+        }
+
+        .lift-cable {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: #333;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .lift-car {
+            position: absolute;
+            width: 44px;
+            height: 36px;
+            /* Slightly smaller than floor height (40px) */
+            background: #607D8B;
+            border: 2px solid #37474F;
+            border-radius: 4px;
+            left: 1px;
+            /* Top will be set dynamically via JS */
+            transition: top 0.8s ease-in-out;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .lift-window {
+            width: 20px;
+            height: 20px;
+            background: #B3E5FC;
+            border: 1px solid #78909C;
+            border-radius: 2px;
         }
 
         /* --- Controls (Game Pad Style) --- */
@@ -525,6 +577,14 @@
                 <div class="floor cinema" data-level="-3">CINEMA 🎬</div>
                 <div class="floor ghost" data-level="-4">Ghost House 👻</div>
                 <div class="floor dinosaur" data-level="-5">DINOSAUR 🦖</div>
+
+                <!-- Lift System -->
+                <div class="lift-shaft">
+                    <div class="lift-cable"></div>
+                    <div class="lift-car" id="lift-car">
+                        <div class="lift-window"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -617,6 +677,30 @@
                 const sign = currentLevel > 0 ? '+' : '';
                 statusDisplay.innerText = `Level: ${sign}${currentLevel}`;
             }
+
+            updateLiftPosition();
+        }
+
+        function updateLiftPosition() {
+            const building = document.getElementById('building');
+            const targetFloor = document.querySelector(`.floor[data-level='${currentLevel}']`);
+            const liftCar = document.getElementById('lift-car');
+            const roof = document.querySelector('.roof');
+
+            if (!targetFloor || !liftCar || !building) return;
+
+            // Calculate position relative to the building container
+            // The floor's offsetTop is relative to the building container
+            // We want to center the lift on the floor.
+
+            const floorTop = targetFloor.offsetTop;
+            const floorHeight = targetFloor.offsetHeight;
+            const liftHeight = liftCar.offsetHeight;
+
+            // Center vertically
+            const topPos = floorTop + (floorHeight / 2) - (liftHeight / 2);
+
+            liftCar.style.top = `${topPos}px`;
         }
 
         async function startJourney() {
