@@ -66,14 +66,6 @@
             margin-left: 10px;
         }
 
-        .intro-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-
         /* --- Layout --- */
         .game-area {
             display: flex;
@@ -155,7 +147,7 @@
             color: #333;
         }
 
-        /* Floor Colors (Keep existing) */
+        /* Floor Colors */
         .space {
             background: linear-gradient(to right, #5D4037, #8D6E63);
             color: #FFD54F;
@@ -194,40 +186,6 @@
             height: 50px;
             z-index: 5;
             position: relative;
-        }
-
-        /* Ground Visuals */
-        .ground-line {
-            height: 10px;
-            background: #4CAF50;
-            width: 340px;
-            margin-left: -30px;
-            border-radius: 5px;
-            position: absolute;
-            top: 395px;
-            /* Adjusted for smaller floors (6 floors * 40 + roof ~100 + welcome 50) approx calculation needed or dynamic */
-            z-index: 7;
-            box-shadow: 0 5px 0 #3E2723;
-            display: none;
-            /* Hide complex ground on mobile to simplify/scale */
-        }
-
-        /* Simpler ground for mobile scaling */
-        .ground-simple {
-            position: absolute;
-            width: 120%;
-            left: -10%;
-            height: 10px;
-            background: #4CAF50;
-            bottom: 200px;
-            /* Approximate, tied to Welcome floor */
-            z-index: -1;
-            /* We will position this relative to the building container in HTML */
-        }
-
-        .underground-overlay {
-            display: none;
-            /* Hide overlay complexity for mobile performance/scaling */
         }
 
         .toys {
@@ -270,7 +228,6 @@
             content: "📍";
             position: absolute;
             left: 10px;
-            /* Moved to left to avoid lift overlap */
             font-size: 1.2rem;
             animation: bounce 0.8s infinite;
         }
@@ -316,12 +273,10 @@
             position: absolute;
             width: 44px;
             height: 36px;
-            /* Slightly smaller than floor height (40px) */
             background: #607D8B;
             border: 2px solid #37474F;
             border-radius: 4px;
             left: 1px;
-            /* Top will be set dynamically via JS */
             transition: top 0.8s ease-in-out;
             z-index: 2;
             display: flex;
@@ -344,7 +299,6 @@
             padding: 10px 20px;
             width: 100%;
             height: 140px;
-            /* Fixed height for consistency */
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -364,7 +318,6 @@
             }
         }
 
-        /* Left: D-Pad Area */
         .d-pad {
             display: flex;
             flex-direction: column;
@@ -392,7 +345,6 @@
             background: #78909C;
         }
 
-        /* Center: LCD Display */
         .lcd-panel {
             flex-grow: 1;
             background: #000;
@@ -446,7 +398,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
-        /* Right: Action Button */
         .action-pad {
             display: flex;
             align-items: center;
@@ -483,6 +434,77 @@
             cursor: not-allowed;
         }
 
+        /* --- Teacher Interface --- */
+        .teacher-container {
+            position: absolute;
+            top: 100px;
+            left: 10px;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            max-width: 250px;
+            pointer-events: none;
+            /* Let clicks pass through */
+        }
+
+        .teacher-avatar {
+            font-size: 3rem;
+            margin-right: 10px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .teacher-dialogue {
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 15px;
+            border-top-left-radius: 0;
+            padding: 10px 15px;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 0.95rem;
+            color: #333;
+            position: relative;
+            pointer-events: auto;
+            transition: opacity 0.3s;
+        }
+
+        .teacher-dialogue::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 15px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid #333;
+        }
+
+        .teacher-dialogue::after {
+            content: "";
+            position: absolute;
+            left: -7px;
+            top: 15px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid #fff;
+        }
+
         /* Mobile Scaling Logic */
         @media (max-height: 700px) {
             .floor {
@@ -498,21 +520,8 @@
                 font-size: 0.9rem;
             }
 
-            .roof h1 span {
-                font-size: 1.2rem;
-            }
-
             .intro-card {
                 padding: 5px 10px;
-            }
-
-            .intro-card h2 {
-                font-size: 1rem;
-            }
-
-            .intro-card p {
-                font-size: 0.8rem;
-                display: none;
             }
 
             .controls-container {
@@ -536,6 +545,20 @@
             .lcd-screen {
                 font-size: 1.2rem;
             }
+
+            .teacher-container {
+                top: 60px;
+                max-width: 200px;
+            }
+
+            .teacher-avatar {
+                font-size: 2.5rem;
+            }
+
+            .teacher-dialogue {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -550,6 +573,14 @@
         <div class="display-screen" id="status-display"
             style="padding: 5px 10px; margin:0; font-size: 1rem; border:1px solid #333; background:black; min-width: 100px;">
             Level: 0
+        </div>
+    </div>
+
+    <!-- Teacher Interface -->
+    <div class="teacher-container" id="teacher-ui">
+        <div class="teacher-avatar">👨‍🏫</div>
+        <div class="teacher-dialogue" id="teacher-text">
+            Loading...
         </div>
     </div>
 
@@ -685,7 +716,6 @@
             const building = document.getElementById('building');
             const targetFloor = document.querySelector(`.floor[data-level='${currentLevel}']`);
             const liftCar = document.getElementById('lift-car');
-            const roof = document.querySelector('.roof');
 
             if (!targetFloor || !liftCar || !building) return;
 
@@ -708,7 +738,6 @@
             if (command.length === 0) return;
 
             // 1. Parse Legs (Group consecutive identical characters)
-            // e.g. "+++--+" -> ["+++", "--", "+"]
             const legs = command.match(/(\+)+|(-)+/g) || [];
 
             // 2. Validate Path Before Moving
@@ -768,11 +797,57 @@
             updateVisuals();
             lcdStatus.innerText = "READY";
             setControlsEnabled(true);
+
+            // Teacher Check
+            checkMissionStatus();
+        }
+
+        // --- Teacher Logic ---
+        const teacherText = document.getElementById('teacher-text');
+        let missionState = 'INTRO'; // INTRO, MOVING_TO_ART, COMPLETED
+
+        function showTeacherMessage(text) {
+            teacherText.style.opacity = '0';
+            setTimeout(() => {
+                teacherText.innerHTML = text; // Allow HTML for bolding
+                teacherText.style.opacity = '1';
+            }, 300);
+        }
+
+        function teacherSequence() {
+            // Step 1: Intro
+            showTeacherMessage("Hello! I am your Teacher. 👋<br><br>To go UP use <b>+</b>.<br>To go DOWN use <b>-</b>.");
+
+            // Step 2: Task Assignment (after delay)
+            setTimeout(() => {
+                showTeacherMessage("Now, a task for you!<br><br>Please take the lift to the <b>Art Centre (Level 2)</b>.");
+                missionState = 'MOVING_TO_ART';
+                // Highlight target
+                const artFloor = document.querySelector('.floor[data-level="2"]');
+                if (artFloor) artFloor.style.border = "2px dashed red";
+            }, 5000);
+        }
+
+        function checkMissionStatus() {
+            if (missionState === 'MOVING_TO_ART') {
+                if (currentLevel === 2) {
+                    showTeacherMessage("🌟 Excellent work!<br>You reached the Art Centre!");
+                    missionState = 'COMPLETED';
+                    // Remove highlight
+                    const artFloor = document.querySelector('.floor[data-level="2"]');
+                    if (artFloor) artFloor.style.border = "";
+                } else {
+                    showTeacherMessage("Not quite there yet.<br>I need you to go to <b>Level 2</b> (Art Centre).");
+                }
+            }
         }
 
         // Init
         updateVisuals();
         updateVirtualScreen();
+
+        // Start Teacher
+        setTimeout(teacherSequence, 1000);
 
         // Dynamic Scaling for "No Scroll"
         function adjustBuildingScale() {
@@ -789,7 +864,6 @@
             const buildingHeight = building.scrollHeight;
             const buildingWidth = building.scrollWidth;
 
-            // Add some padding
             const padding = 20;
 
             let scale = 1;
@@ -799,8 +873,7 @@
                 scale = (availableHeight - padding) / buildingHeight;
             }
 
-            // Limit checks (don't scale purely for width unless necessary, but flex handles that mostly. Focus on height)
-            // But if width is also too big, take the smaller scale
+            // Limit checks
             if (buildingWidth > availableWidth - padding) {
                 const widthScale = (availableWidth - padding) / buildingWidth;
                 scale = Math.min(scale, widthScale);
