@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bela's Building of Fun - Animated</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #FF9800;
+            --primary-dark: #F57C00;
+            --accent-color: #546E7A;
+            --building-width: 280px;
+            --control-panel-bg: #263238;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            /* Full viewport height */
+            width: 100vw;
+            overflow: hidden;
+            /* Prevent scrolling */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* --- Intro Section --- */
+        .intro-card {
+            background-color: #fff;
+            border-bottom: 2px solid #8D6E63;
+            padding: 10px 20px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .intro-card h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            display: inline-block;
+        }
+
+        .intro-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .intro-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+
+        /* --- Layout --- */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            /* Stack vertically on mobile */
+            justify-content: space-between;
+            /* Push controls to bottom */
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            /* Fill remaining space */
+            padding: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Building Styles --- */
+        .building-wrapper {
+            flex-grow: 1;
+            /* Take up available space */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+            /* Ensure building doesn't overflow wrapper */
+            position: relative;
+        }
+
+        .building-container {
+            width: var(--building-width);
+            position: relative;
+            filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.3));
+            /* Scale building to fit if needed */
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
+
+        .roof {
+            background: #d35400;
+            color: #fff;
+            text-align: center;
+            padding: 10px 5px;
+            border-radius: 15px 15px 0 0;
+            border: 4px solid #3e2723;
+            border-bottom: none;
+            z-index: 2;
+            position: relative;
+        }
+
+        .roof h1 {
+            margin: 0;
+            font-size: 1rem;
+            color: #FFECB3;
+            text-shadow: 2px 2px #3e2723;
+            line-height: 1.2;
+        }
+
+        .roof h1 span {
+            font-size: 1.5rem;
+            color: #FF9800;
+            display: block;
+            transform: rotate(-3deg);
+        }
+
+        .floor {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            /* Slightly smaller floors for mobile fitting */
+            font-size: 1rem;
+            font-weight: bold;
+            border-left: 6px solid #3e2723;
+            border-right: 6px solid #3e2723;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            color: #333;
+        }
+
+        /* Floor Colors (Keep existing) */
+        .space {
+            background: linear-gradient(to right, #5D4037, #8D6E63);
+            color: #FFD54F;
+        }
+
+        .sports {
+            background: #81C784;
+            color: #E8F5E9;
+        }
+
+        .ice-cream {
+            background: #E0F7FA;
+            color: #00BCD4;
+            font-family: 'Brush Script MT', cursive;
+        }
+
+        .books {
+            background: #FFF3E0;
+            color: #5D4037;
+        }
+
+        .art {
+            background: #FFCC80;
+            color: #D84315;
+        }
+
+        .food {
+            background: #C5E1A5;
+            color: #33691E;
+        }
+
+        .welcome {
+            background: #ECEFF1;
+            color: #C62828;
+            border-bottom: none;
+            height: 50px;
+            z-index: 5;
+            position: relative;
+        }
+
+        /* Ground Visuals */
+        .ground-line {
+            height: 10px;
+            background: #4CAF50;
+            width: 340px;
+            margin-left: -30px;
+            border-radius: 5px;
+            position: absolute;
+            top: 395px;
+            /* Adjusted for smaller floors (6 floors * 40 + roof ~100 + welcome 50) approx calculation needed or dynamic */
+            z-index: 7;
+            box-shadow: 0 5px 0 #3E2723;
+            display: none;
+            /* Hide complex ground on mobile to simplify/scale */
+        }
+
+        /* Simpler ground for mobile scaling */
+        .ground-simple {
+            position: absolute;
+            width: 120%;
+            left: -10%;
+            height: 10px;
+            background: #4CAF50;
+            bottom: 200px;
+            /* Approximate, tied to Welcome floor */
+            z-index: -1;
+            /* We will position this relative to the building container in HTML */
+        }
+
+        .underground-overlay {
+            display: none;
+            /* Hide overlay complexity for mobile performance/scaling */
+        }
+
+        .toys {
+            background: #FFF59D;
+            color: #F44336;
+        }
+
+        .games {
+            background: #7E57C2;
+            color: #E040FB;
+        }
+
+        .cinema {
+            background: #D7CCC8;
+            color: #3E2723;
+        }
+
+        .ghost {
+            background: #37474F;
+            color: #B0BEC5;
+        }
+
+        .dinosaur {
+            background: #3E2723;
+            color: #388E3C;
+            border-radius: 0 0 10px 10px;
+            border-bottom: 6px solid #3e2723;
+        }
+
+        /* Active Lift Highlight */
+        .floor.active-lift {
+            box-shadow: inset 0 0 0 4px #FFD700;
+            transform: scale(1.05);
+            /* Slight pop */
+            z-index: 10;
+            background-color: white !important;
+        }
+
+        .floor.active-lift::after {
+            content: "📍";
+            position: absolute;
+            right: 10px;
+            font-size: 1.2rem;
+            animation: bounce 0.8s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(-5px);
+            }
+        }
+
+        /* --- Controls (Game Pad Style) --- */
+        .controls-container {
+            background: #212121;
+            padding: 10px 20px;
+            width: 100%;
+            height: 140px;
+            /* Fixed height for consistency */
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+            border-top: 4px solid #455A64;
+            position: relative;
+            gap: 15px;
+            z-index: 50;
+        }
+
+        @media (min-width: 768px) {
+            .controls-container {
+                max-width: 600px;
+                border-radius: 20px;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Left: D-Pad Area */
+        .d-pad {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .arrow-btn {
+            width: 60px;
+            height: 50px;
+            background: #546E7A;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px #263238;
+            transition: all 0.1s;
+        }
+
+        .arrow-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 #263238;
+            background: #78909C;
+        }
+
+        /* Center: LCD Display */
+        .lcd-panel {
+            flex-grow: 1;
+            background: #000;
+            border: 4px solid #555;
+            border-radius: 8px;
+            height: 100%;
+            max-height: 100px;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+            position: relative;
+        }
+
+        .lcd-screen {
+            flex-grow: 1;
+            color: #00E676;
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: auto;
+            white-space: nowrap;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(0, 230, 118, 0.5);
+        }
+
+        .lcd-status {
+            font-size: 0.7rem;
+            color: #B0BEC5;
+            text-align: right;
+            font-family: sans-serif;
+            margin-top: 2px;
+        }
+
+        .clear-btn-mini {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #d32f2f;
+            color: white;
+            border: 2px solid #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Right: Action Button */
+        .action-pad {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .big-go-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #FFB74D, #EF6C00);
+            border: 4px solid #E65100;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 6px #BF360C, 0 10px 20px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .big-go-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 #BF360C;
+        }
+
+        .big-go-btn:disabled {
+            background: #90A4AE;
+            border-color: #546E7A;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Mobile Scaling Logic */
+        @media (max-height: 700px) {
+            .floor {
+                height: 35px;
+                font-size: 0.9rem;
+            }
+
+            .roof {
+                padding: 5px;
+            }
+
+            .roof h1 {
+                font-size: 0.9rem;
+            }
+
+            .roof h1 span {
+                font-size: 1.2rem;
+            }
+
+            .intro-card {
+                padding: 5px 10px;
+            }
+
+            .intro-card h2 {
+                font-size: 1rem;
+            }
+
+            .intro-card p {
+                font-size: 0.8rem;
+                display: none;
+            }
+
+            .controls-container {
+                height: 120px;
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .arrow-btn {
+                width: 50px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .big-go-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 1rem;
+            }
+
+            .lcd-screen {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="intro-card">
+        <div style="flex-grow:1; text-align: left;">
+            <h2>🚀 Lift Control</h2>
+            <p id="intro-text" style="display:none;">Use buttons to Move!</p>
+        </div>
+        <div class="display-screen" id="status-display"
+            style="padding: 5px 10px; margin:0; font-size: 1rem; border:1px solid #333; background:black; min-width: 100px;">
+            Level: 0
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="building-wrapper">
+            <div class="building-container" id="building">
+                <div class="roof">
+                    <h1>Bela's Building<br><span>OF FUN!</span></h1>
+                </div>
+
+                <div class="floor space" data-level="6">⚡ SPACE ⚡</div>
+                <div class="floor sports" data-level="5">SPORTS ⚽</div>
+                <div class="floor ice-cream" data-level="4">Ice Cream 🍦</div>
+                <div class="floor books" data-level="3">BOOKS</div>
+                <div class="floor art" data-level="2">Art Centre 🎨</div>
+                <div class="floor food" data-level="1">FOOD COURT</div>
+
+                <div class="floor welcome active-lift" id="start-floor" data-level="0">Welcome Hall 🏠</div>
+
+                <!-- Simplified Ground for Mobile -->
+                <div style="background: #4CAF50; height: 5px; width: 110%; margin-left:-5%;"></div>
+
+                <div class="floor toys" data-level="-1">TOYS 🧸</div>
+                <div class="floor games" data-level="-2">VIDEO GAMES 🎮</div>
+                <div class="floor cinema" data-level="-3">CINEMA 🎬</div>
+                <div class="floor ghost" data-level="-4">Ghost House 👻</div>
+                <div class="floor dinosaur" data-level="-5">DINOSAUR 🦖</div>
+            </div>
+        </div>
+
+        <div class="controls-container">
+            <!-- Left: D-Pad -->
+            <div class="d-pad">
+                <button class="arrow-btn" onclick="addChar('+')">⬆️</button>
+                <button class="arrow-btn" onclick="addChar('-')">⬇️</button>
+            </div>
+
+            <!-- Center: LCD -->
+            <div class="lcd-panel">
+                <button class="clear-btn-mini" onclick="clearInput()">✖</button>
+                <div class="lcd-screen" id="virtual-screen"></div>
+                <div class="lcd-status">READY</div>
+            </div>
+
+            <!-- Right: Action -->
+            <div class="action-pad">
+                <button id="go-btn" class="big-go-btn" onclick="startJourney()">GO!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentLevel = 0;
+        const maxLevel = 6;   // Space
+        const minLevel = -5;  // Dinosaur
+
+        let commandSequence = ""; // Virtual input state
+
+        // DOM Elements
+        const statusDisplay = document.getElementById('status-display'); // Top status
+        const virtualScreen = document.getElementById('virtual-screen'); // Bottom command view
+        const floors = document.querySelectorAll('.floor');
+        const goBtn = document.getElementById('go-btn');
+        const arrowBtns = document.querySelectorAll('.arrow-btn');
+        const clearBtn = document.querySelector('.clear-btn-mini');
+
+        // Helper for async delay
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        function addChar(char) {
+            commandSequence += char;
+            updateVirtualScreen();
+        }
+
+        function clearInput() {
+            commandSequence = "";
+            updateVirtualScreen();
+        }
+
+        function updateVirtualScreen() {
+            if (commandSequence === "") {
+                virtualScreen.innerText = "_";
+                virtualScreen.style.opacity = "0.5";
+            } else {
+                virtualScreen.innerText = commandSequence;
+                virtualScreen.style.opacity = "1";
+            }
+        }
+
+        function setControlsEnabled(isEnabled) {
+            goBtn.disabled = !isEnabled;
+            arrowBtns.forEach(btn => btn.disabled = !isEnabled);
+            clearBtn.disabled = !isEnabled;
+            if (isEnabled) {
+                goBtn.style.filter = "none";
+            } else {
+                goBtn.style.filter = "grayscale(100%)";
+            }
+        }
+
+        function updateVisuals(textOverride = null) {
+            // 1. Highlight Correct Floor
+            floors.forEach(f => {
+                const level = parseInt(f.getAttribute('data-level'));
+                if (level === currentLevel) {
+                    f.classList.add('active-lift');
+                } else {
+                    f.classList.remove('active-lift');
+                }
+            });
+
+            // 2. Update Screen Text (Top Display)
+            if (textOverride) {
+                statusDisplay.innerText = textOverride;
+            } else {
+                const sign = currentLevel > 0 ? '+' : '';
+                statusDisplay.innerText = `Level: ${sign}${currentLevel}`;
+            }
+        }
+
+        async function startJourney() {
+            const command = commandSequence;
+            if (command.length === 0) return;
+
+            // 1. Parse Legs (Group consecutive identical characters)
+            // e.g. "+++--+" -> ["+++", "--", "+"]
+            const legs = command.match(/(\+)+|(-)+/g) || [];
+
+            // 2. Validate Path Before Moving
+            let simLevel = currentLevel;
+            for (let leg of legs) {
+                const delta = leg.length * (leg[0] === '+' ? 1 : -1);
+                simLevel += delta;
+
+                if (simLevel > maxLevel) {
+                    statusDisplay.style.color = "red";
+                    statusDisplay.innerText = "Error: Too High!";
+                    setTimeout(() => { statusDisplay.style.color = "#00E676"; updateVisuals(); }, 1500);
+                    return;
+                }
+                if (simLevel < minLevel) {
+                    statusDisplay.style.color = "red";
+                    statusDisplay.innerText = "Error: Too Low!";
+                    setTimeout(() => { statusDisplay.style.color = "#00E676"; updateVisuals(); }, 1500);
+                    return;
+                }
+            }
+
+            // --- Start Animation Loop ---
+            setControlsEnabled(false);
+            clearInput();
+
+            const lcdStatus = document.querySelector('.lcd-status');
+            lcdStatus.innerText = "MOVING...";
+
+            // 3. Execute Legs
+            for (let i = 0; i < legs.length; i++) {
+                const leg = legs[i];
+                const direction = leg[0] === '+' ? 1 : -1;
+                const dist = leg.length;
+                const legTarget = currentLevel + (dist * direction);
+
+                // Move floor by floor for this leg
+                while (currentLevel !== legTarget) {
+                    statusDisplay.innerText = direction > 0 ? "Going Up... ▲" : "Going Down... ▼";
+                    await wait(800);
+
+                    currentLevel += direction;
+                    updateVisuals();
+                }
+
+                // Small pause between legs if there are more
+                if (i < legs.length - 1) {
+                    statusDisplay.innerText = "Holding...";
+                    await wait(500);
+                }
+            }
+
+            // Finished
+            statusDisplay.innerText = "Ding! 🔔";
+            lcdStatus.innerText = "ARRIVED";
+            await wait(1000);
+            updateVisuals();
+            lcdStatus.innerText = "READY";
+            setControlsEnabled(true);
+        }
+
+        // Init
+        updateVisuals();
+        updateVirtualScreen();
+
+        // Dynamic Scaling for "No Scroll"
+        function adjustBuildingScale() {
+            const wrapper = document.querySelector('.building-wrapper');
+            const building = document.getElementById('building');
+
+            if (!wrapper || !building) return;
+
+            // Reset scale to measure natural size
+            building.style.transform = 'scale(1)';
+
+            const availableHeight = wrapper.clientHeight;
+            const availableWidth = wrapper.clientWidth;
+            const buildingHeight = building.scrollHeight;
+            const buildingWidth = building.scrollWidth;
+
+            // Add some padding
+            const padding = 20;
+
+            let scale = 1;
+
+            // Check vertical fit
+            if (buildingHeight > availableHeight - padding) {
+                scale = (availableHeight - padding) / buildingHeight;
+            }
+
+            // Limit checks (don't scale purely for width unless necessary, but flex handles that mostly. Focus on height)
+            // But if width is also too big, take the smaller scale
+            if (buildingWidth > availableWidth - padding) {
+                const widthScale = (availableWidth - padding) / buildingWidth;
+                scale = Math.min(scale, widthScale);
+            }
+
+            if (scale < 1) {
+                building.style.transform = `scale(${scale})`;
+            }
+        }
+
+        window.addEventListener('resize', adjustBuildingScale);
+        window.addEventListener('load', adjustBuildingScale);
+        // Call immediately in case load already fired
+        adjustBuildingScale();
+
+    </script>
+
+</body>
+
+</html>
