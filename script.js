@@ -34,7 +34,7 @@ function updateVirtualScreen() {
         virtualScreen.innerText = commandSequence;
         virtualScreen.style.opacity = "1";
     }
-} Z
+}
 
 function setControlsEnabled(isEnabled) {
     goBtn.disabled = !isEnabled;
@@ -134,10 +134,11 @@ async function startJourney() {
         // Move floor by floor for this leg
         while (currentLevel !== legTarget) {
             statusDisplay.innerText = direction > 0 ? "Going Up... ▲" : "Going Down... ▼";
-            await wait(800);
 
             currentLevel += direction;
             updateVisuals();
+
+            await wait(800); // Wait for transition to compete
         }
 
         // Small pause between legs if there are more
