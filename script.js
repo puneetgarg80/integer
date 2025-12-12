@@ -272,13 +272,25 @@ function checkMissionStatus() {
 
                     setTimeout(() => {
                         upgradeToNumeric();
-                        showGuideMessage("<b>New System Online!</b><br>To go up 4 floors, press <b>↑</b> then <b>4</b>.<br>Give it a try!");
-                        missionState = 'COMPLETED';
+                        // Teleport to Level 0 for the next test
+                        currentLevel = 0;
+                        updateVisuals();
+                        showGuideMessage("<b>System Upgraded!</b><br>I've warped you to Level 0.<br>Now, try the new controls: Go <b>3 floors DOWN</b> (↓3).");
+                        missionState = 'MOVING_DOWN_3_NEW';
+                        setTargetHighlight(-3);
                     }, 4000);
                 }, 5000);
             }, 3000);
         } else {
-            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are down there.");
+            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are at Level -5.");
+        }
+    } else if (missionState === 'MOVING_DOWN_3_NEW') {
+        if (currentLevel === -3) {
+            showGuideMessage("🎬 Perfect!<br>Welcome to the Cinema!");
+            missionState = 'COMPLETED';
+            setTargetHighlight(null);
+        } else {
+            showGuideMessage("Not quite.<br>Press <b>↓</b> then <b>3</b> to go to Level -3.");
         }
     }
 }
