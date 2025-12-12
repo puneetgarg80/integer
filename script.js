@@ -186,7 +186,7 @@ function guideSequence() {
 
     // Step 2: Task Assignment (after delay)
     setTimeout(() => {
-        showGuideMessage("Now, a task for you!<br><br>Please take the lift to the <b>Art Centre (Level 2)</b>.");
+        showGuideMessage("Now, a task for you!<br><br>Please take the lift to the <b>Art Centre</b>.");
         missionState = 'MOVING_TO_ART';
         setTargetHighlight(2);
     }, 5000);
@@ -204,7 +204,7 @@ function checkMissionStatus() {
                 setTargetHighlight(6);
             }, 3000);
         } else {
-            showGuideMessage("Not quite there yet.<br>I need you to go to <b>Level 2</b> (Art Centre).");
+            showGuideMessage("Not quite there yet.<br>I need you to go to  (Art Centre).");
         }
     } else if (missionState === 'MOVING_UP_4') {
         if (currentLevel === 6) {
@@ -217,28 +217,15 @@ function checkMissionStatus() {
                 setTargetHighlight(3);
             }, 3000);
         } else {
-            showGuideMessage("Try again!<br>You need to go <b>4 floors UP</b> (to Level 6).");
+            showGuideMessage("Try again!<br>You need to go <b>4 floors UP</b>.");
         }
     } else if (missionState === 'MOVING_DOWN_3') {
         if (currentLevel === 3) {
             showGuideMessage("📚 Brilliant!<br>You found the Books!");
-            setTargetHighlight(null);
-
-            setTimeout(() => {
-                showGuideMessage("Time for an adventure!<br>Go all the way down to <b>Dinosaurs (Level -5)</b>.");
-                missionState = 'MOVING_TO_DINO';
-                setTargetHighlight(-5);
-            }, 3000);
-        } else {
-            showGuideMessage("Not there yet.<br>Go <b>3 floors DOWN</b> (to Level 3).");
-        }
-    } else if (missionState === 'MOVING_TO_DINO') {
-        if (currentLevel === -5) {
-            showGuideMessage("🦖 ROAR! You made it!<br>Watch out for the T-Rex!");
             missionState = 'COMPLETED';
             setTargetHighlight(null);
         } else {
-            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are at Level -5.");
+            showGuideMessage("Not there yet.<br>Go <b>3 floors DOWN</b>.");
         }
     }
 }
