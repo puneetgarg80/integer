@@ -172,6 +172,14 @@ function showGuideMessage(text) {
     }, 300);
 }
 
+function setTargetHighlight(level) {
+    document.querySelectorAll('.floor').forEach(f => f.style.border = "");
+    if (level !== null) {
+        const floor = document.querySelector(`.floor[data-level='${level}']`);
+        if (floor) floor.style.border = "2px dashed red";
+    }
+}
+
 function guideSequence() {
     // Step 1: Intro
     showGuideMessage("Hello! I am your Guide. 👋<br><br>To go UP use <b>↑</b>.<br>To go DOWN use <b>↓</b>.");
@@ -180,9 +188,7 @@ function guideSequence() {
     setTimeout(() => {
         showGuideMessage("Now, a task for you!<br><br>Please take the lift to the <b>Art Centre (Level 2)</b>.");
         missionState = 'MOVING_TO_ART';
-        // Highlight target
-        const artFloor = document.querySelector('.floor[data-level="2"]');
-        if (artFloor) artFloor.style.border = "2px dashed red";
+        setTargetHighlight(2);
     }, 5000);
 }
 
@@ -190,12 +196,49 @@ function checkMissionStatus() {
     if (missionState === 'MOVING_TO_ART') {
         if (currentLevel === 2) {
             showGuideMessage("🌟 Excellent work!<br>You reached the Art Centre!");
-            missionState = 'COMPLETED';
-            // Remove highlight
-            const artFloor = document.querySelector('.floor[data-level="2"]');
-            if (artFloor) artFloor.style.border = "";
+            setTargetHighlight(null);
+
+            setTimeout(() => {
+                showGuideMessage("Next Challenge:<br>Go <b>4 floors UP</b> from here.");
+                missionState = 'MOVING_UP_4';
+                setTargetHighlight(6);
+            }, 3000);
         } else {
             showGuideMessage("Not quite there yet.<br>I need you to go to <b>Level 2</b> (Art Centre).");
+        }
+    } else if (missionState === 'MOVING_UP_4') {
+        if (currentLevel === 6) {
+            showGuideMessage("🚀 Wow! You are in Space!");
+            setTargetHighlight(null);
+
+            setTimeout(() => {
+                showGuideMessage("Final Challenge:<br>Go <b>3 floors DOWN</b>.");
+                missionState = 'MOVING_DOWN_3';
+                setTargetHighlight(3);
+            }, 3000);
+        } else {
+            showGuideMessage("Try again!<br>You need to go <b>4 floors UP</b> (to Level 6).");
+        }
+    } else if (missionState === 'MOVING_DOWN_3') {
+        if (currentLevel === 3) {
+            showGuideMessage("📚 Brilliant!<br>You found the Books!");
+            setTargetHighlight(null);
+
+            setTimeout(() => {
+                showGuideMessage("Time for an adventure!<br>Go all the way down to <b>Dinosaurs (Level -5)</b>.");
+                missionState = 'MOVING_TO_DINO';
+                setTargetHighlight(-5);
+            }, 3000);
+        } else {
+            showGuideMessage("Not there yet.<br>Go <b>3 floors DOWN</b> (to Level 3).");
+        }
+    } else if (missionState === 'MOVING_TO_DINO') {
+        if (currentLevel === -5) {
+            showGuideMessage("🦖 ROAR! You made it!<br>Watch out for the T-Rex!");
+            missionState = 'COMPLETED';
+            setTargetHighlight(null);
+        } else {
+            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are at Level -5.");
         }
     }
 }
