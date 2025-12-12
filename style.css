@@ -67,8 +67,11 @@ body {
     /* Push controls to bottom */
     align-items: center;
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
     /* Fill remaining space */
+    min-height: 0;
+    /* Allow shrinking */
+    /* height: 100%; removed */
     padding: 10px;
     overflow: hidden;
     position: relative;
@@ -438,13 +441,16 @@ body {
 
 /* --- Guide Interface --- */
 .guide-container {
-    position: absolute;
-    top: 100px;
-    left: 10px;
-    z-index: 100;
+    /* position: absolute; removed to prevent overlap */
+    position: relative;
+    width: 100%;
     display: flex;
-    align-items: flex-start;
-    max-width: 250px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    background-color: var(--bg-color);
+    /* Match bg */
+    z-index: 100;
     pointer-events: none;
     /* Let clicks pass through */
 }
@@ -576,8 +582,9 @@ body {
     }
 
     .guide-container {
-        top: 50px;
-        max-width: 180px;
+        /* Static positioning handles top */
+        max-width: 100%;
+        padding: 2px;
     }
 
     .guide-avatar {
