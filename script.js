@@ -275,14 +275,14 @@ function checkMissionStatus() {
                         // Teleport to Level 0 for the next test
                         currentLevel = 0;
                         updateVisuals();
-                        showGuideMessage("<b>System Upgraded!</b><br>I've warped you to Level 0.<br>Now, try the new controls: Go <b>3 floors DOWN</b> (↓3).");
+                        showGuideMessage("<b>System Upgraded!</b><br>I've taken you to Welcom Hall.<br>Now, try the new controls: Go <b>3 floors DOWN</b> (↓3).");
                         missionState = 'MOVING_DOWN_3_NEW';
                         setTargetHighlight(-3);
                     }, 4000);
                 }, 5000);
             }, 3000);
         } else {
-            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are at Level -5.");
+            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are down below.");
         }
     } else if (missionState === 'MOVING_DOWN_3_NEW') {
         if (currentLevel === -3) {
@@ -290,7 +290,7 @@ function checkMissionStatus() {
             missionState = 'COMPLETED';
             setTargetHighlight(null);
         } else {
-            showGuideMessage("Not quite.<br>Press <b>↓</b> then <b>3</b> to go to Level -3.");
+            showGuideMessage("Not quite.<br>Press <b>↓</b> then <b>3</b>.");
         }
     }
 }
@@ -314,28 +314,28 @@ function initFromParams() {
         case 'MOVING_TO_ART':
             currentLevel = 0;
             setTargetHighlight(2);
-            showGuideMessage("Dev Mode: Jumped to <b>MOVING_TO_ART</b>.<br>Go to Level 2.");
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_TO_ART</b>.<br>.");
             break;
         case 'MOVING_UP_4':
             currentLevel = 2;
             setTargetHighlight(6);
-            showGuideMessage("Dev Mode: Jumped to <b>MOVING_UP_4</b>.<br>Go to Level 6.");
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_UP_4</b>.<br>.");
             break;
         case 'MOVING_DOWN_3':
             currentLevel = 6;
             setTargetHighlight(3);
-            showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3</b>.<br>Go to Level 3.");
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3</b>.<br>.");
             break;
         case 'MOVING_TO_DINO':
             currentLevel = 3;
             setTargetHighlight(-5);
-            showGuideMessage("Dev Mode: Jumped to <b>MOVING_TO_DINO</b>.<br>Go to Level -5.");
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_TO_DINO</b>.<br>.");
             break;
         case 'MOVING_DOWN_3_NEW':
             currentLevel = 0;
             setTargetHighlight(-3);
             upgradeToNumeric(); // Force upgrade UI
-            showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3_NEW</b>.<br>Go to Level -3 (↓3).");
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3_NEW</b>.<br>.");
             break;
         case 'COMPLETED':
             showGuideMessage("Dev Mode: Jumped to <b>COMPLETED</b>.");
