@@ -350,6 +350,28 @@ body {
     background: #78909C;
 }
 
+.num-pad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    background: #455A64;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.num-pad .arrow-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+    margin: 0;
+    box-shadow: 0 2px #263238;
+}
+
+.num-pad .arrow-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 #263238;
+}
+
 .lcd-panel {
     flex-grow: 1;
     background: #000;
@@ -579,6 +601,12 @@ body {
     .lcd-status {
         font-size: 0.6rem;
         margin-top: 0;
+    }
+
+    .num-pad .arrow-btn {
+        width: 25px;
+        height: 20px;
+        font-size: 0.8rem;
     }
 
     .guide-container {

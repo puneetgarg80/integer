@@ -66,9 +66,25 @@
 
         <div class="controls-container">
             <!-- Left: D-Pad -->
-            <div class="d-pad">
+            <div class="d-pad" id="classic-controls">
                 <button class="arrow-btn" onclick="addChar('↑')">⬆️</button>
                 <button class="arrow-btn" onclick="addChar('↓')">⬇️</button>
+            </div>
+
+            <!-- Numeric Controls (Initially Hidden) -->
+            <div class="num-pad" id="numeric-controls" style="display: none;">
+                <button class="arrow-btn" onclick="addChar('0')">0</button>
+                <button class="arrow-btn" onclick="addChar('1')">1</button>
+                <button class="arrow-btn" onclick="addChar('2')">2</button>
+                <button class="arrow-btn" onclick="addChar('3')">3</button>
+                <button class="arrow-btn" onclick="addChar('4')">4</button>
+                <button class="arrow-btn" onclick="addChar('5')">5</button>
+                <button class="arrow-btn" onclick="addChar('6')">6</button>
+                <button class="arrow-btn" onclick="addChar('7')">7</button>
+                <button class="arrow-btn" onclick="addChar('8')">8</button>
+                <button class="arrow-btn" onclick="addChar('9')">9</button>
+                <button class="arrow-btn" style="background: #37474F;" onclick="addChar('↑')">⬆️</button>
+                <button class="arrow-btn" style="background: #37474F;" onclick="addChar('↓')">⬇️</button>
             </div>
 
             <!-- Center: LCD -->

@@ -2,6 +2,7 @@
 let currentLevel = 0;
 const maxLevel = 6;   // Space
 const minLevel = -5;  // Dinosaur
+let inputMode = 'CLASSIC'; // CLASSIC or NUMERIC
 
 let commandSequence = ""; // Virtual input state
 
@@ -90,12 +91,38 @@ function updateLiftPosition() {
     liftCar.style.top = `${topPos}px`;
 }
 
+function upgradeToNumeric() {
+    inputMode = 'NUMERIC';
+    document.getElementById('classic-controls').style.display = 'none';
+    const numPad = document.getElementById('numeric-controls');
+    numPad.style.display = 'grid';
+
+    statusDisplay.innerText = "SYSTEM UPGRADED!";
+    setTimeout(() => {
+        updateVisuals();
+        clearInput();
+    }, 2000);
+}
+
 async function startJourney() {
     const command = commandSequence;
     if (command.length === 0) return;
 
-    // 1. Parse Legs (Group consecutive identical characters)
-    const legs = command.match(/(↑)+|(↓)+/g) || [];
+    // 1. Parse Legs
+    let legs = [];
+    if (inputMode === 'CLASSIC') {
+        legs = command.match(/(↑)+|(↓)+/g) || [];
+    } else {
+        // Numeric Mode: Matches "↑4", "↓10" etc.
+        const rawLegs = command.match(/([↑↓])(\d+)/g) || [];
+        legs = rawLegs.map(leg => {
+            const dir = leg[0];
+            const count = parseInt(leg.substring(1));
+            return dir.repeat(count);
+        });
+    }
+
+    if (legs.length === 0) return;
 
     // 2. Validate Path Before Moving
     let simLevel = currentLevel;
@@ -189,7 +216,7 @@ function guideSequence() {
         showGuideMessage("Now, a task for you!<br><br>Please take the lift to the <b>Art Centre</b>.");
         missionState = 'MOVING_TO_ART';
         setTargetHighlight(2);
-    }, 5000);
+    }, 3000);
 }
 
 function checkMissionStatus() {
@@ -204,7 +231,7 @@ function checkMissionStatus() {
                 setTargetHighlight(6);
             }, 3000);
         } else {
-            showGuideMessage("Not quite there yet.<br>I need you to go to  (Art Centre).");
+            showGuideMessage("Not quite there yet.<br>I need you to go to <b>Art Centre</b>.");
         }
     } else if (missionState === 'MOVING_UP_4') {
         if (currentLevel === 6) {
@@ -222,10 +249,36 @@ function checkMissionStatus() {
     } else if (missionState === 'MOVING_DOWN_3') {
         if (currentLevel === 3) {
             showGuideMessage("📚 Brilliant!<br>You found the Books!");
-            missionState = 'COMPLETED';
             setTargetHighlight(null);
+
+            setTimeout(() => {
+                showGuideMessage("Time for an adventure!<br>Go all the way down to <b>Dinosaurs</b>.");
+                missionState = 'MOVING_TO_DINO';
+                setTargetHighlight(-5);
+            }, 3000);
         } else {
             showGuideMessage("Not there yet.<br>Go <b>3 floors DOWN</b>.");
+        }
+    } else if (missionState === 'MOVING_TO_DINO') {
+        if (currentLevel === -5) {
+            showGuideMessage("🦖 ROAR! You made it!<br>Watch out for the T-Rex!");
+            setTargetHighlight(null);
+
+            setTimeout(() => {
+                showGuideMessage("Story Time! 📖<br>Bela's Building is getting popular!<br>But people are tired of pressing so many buttons...");
+
+                setTimeout(() => {
+                    showGuideMessage("So Bela invented a <b>Numeric Keypad</b>!<br>Upgrading your lift controls now...");
+
+                    setTimeout(() => {
+                        upgradeToNumeric();
+                        showGuideMessage("<b>New System Online!</b><br>To go up 4 floors, press <b>↑</b> then <b>4</b>.<br>Give it a try!");
+                        missionState = 'COMPLETED';
+                    }, 4000);
+                }, 5000);
+            }, 3000);
+        } else {
+            showGuideMessage("Keep going down!<br>The <b>Dinosaurs</b> are down there.");
         }
     }
 }
