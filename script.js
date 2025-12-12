@@ -295,12 +295,67 @@ function checkMissionStatus() {
     }
 }
 
+
+function initFromParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const stateParam = urlParams.get('missionState');
+
+    if (!stateParam) {
+        // Default Start
+        setTimeout(guideSequence, 1000);
+        return;
+    }
+
+    // Stop existing guide sequence if any (though we are initing fresh)
+    missionState = stateParam;
+
+    // Handle specific states
+    switch (missionState) {
+        case 'MOVING_TO_ART':
+            currentLevel = 0;
+            setTargetHighlight(2);
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_TO_ART</b>.<br>Go to Level 2.");
+            break;
+        case 'MOVING_UP_4':
+            currentLevel = 2;
+            setTargetHighlight(6);
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_UP_4</b>.<br>Go to Level 6.");
+            break;
+        case 'MOVING_DOWN_3':
+            currentLevel = 6;
+            setTargetHighlight(3);
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3</b>.<br>Go to Level 3.");
+            break;
+        case 'MOVING_TO_DINO':
+            currentLevel = 3;
+            setTargetHighlight(-5);
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_TO_DINO</b>.<br>Go to Level -5.");
+            break;
+        case 'MOVING_DOWN_3_NEW':
+            currentLevel = 0;
+            setTargetHighlight(-3);
+            upgradeToNumeric(); // Force upgrade UI
+            showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3_NEW</b>.<br>Go to Level -3 (↓3).");
+            break;
+        case 'COMPLETED':
+            showGuideMessage("Dev Mode: Jumped to <b>COMPLETED</b>.");
+            break;
+        default:
+            console.warn("Unknown mission state:", missionState);
+            setTimeout(guideSequence, 1000); // Fallback
+            break;
+    }
+
+    updateVisuals();
+    updateVirtualScreen();
+}
+
 // Init
 updateVisuals();
 updateVirtualScreen();
 
-// Start Guide
-setTimeout(guideSequence, 1000);
+// Start
+initFromParams();
 
 // Resize Logic
 // We only need to update the lift position because CSS flexbox handles the building size now.
