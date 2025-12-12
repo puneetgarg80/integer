@@ -34,7 +34,7 @@ function updateVirtualScreen() {
         virtualScreen.innerText = commandSequence;
         virtualScreen.style.opacity = "1";
     }
-}
+} Z
 
 function setControlsEnabled(isEnabled) {
     goBtn.disabled = !isEnabled;
@@ -95,12 +95,12 @@ async function startJourney() {
     if (command.length === 0) return;
 
     // 1. Parse Legs (Group consecutive identical characters)
-    const legs = command.match(/(\+)+|(-)+/g) || [];
+    const legs = command.match(/(↑)+|(↓)+/g) || [];
 
     // 2. Validate Path Before Moving
     let simLevel = currentLevel;
     for (let leg of legs) {
-        const delta = leg.length * (leg[0] === '+' ? 1 : -1);
+        const delta = leg.length * (leg[0] === '↑' ? 1 : -1);
         simLevel += delta;
 
         if (simLevel > maxLevel) {
@@ -127,7 +127,7 @@ async function startJourney() {
     // 3. Execute Legs
     for (let i = 0; i < legs.length; i++) {
         const leg = legs[i];
-        const direction = leg[0] === '+' ? 1 : -1;
+        const direction = leg[0] === '↑' ? 1 : -1;
         const dist = leg.length;
         const legTarget = currentLevel + (dist * direction);
 
@@ -206,42 +206,10 @@ updateVirtualScreen();
 // Start Guide
 setTimeout(guideSequence, 1000);
 
-// Dynamic Scaling for "No Scroll"
-function adjustBuildingScale() {
-    const wrapper = document.querySelector('.building-wrapper');
-    const building = document.getElementById('building');
-
-    if (!wrapper || !building) return;
-
-    // Reset scale to measure natural size
-    building.style.transform = 'scale(1)';
-
-    const availableHeight = wrapper.clientHeight;
-    const availableWidth = wrapper.clientWidth;
-    const buildingHeight = building.scrollHeight;
-    const buildingWidth = building.scrollWidth;
-
-    const padding = 20;
-
-    let scale = 1;
-
-    // Check vertical fit
-    if (buildingHeight > availableHeight - padding) {
-        scale = (availableHeight - padding) / buildingHeight;
-    }
-
-    // Limit checks
-    if (buildingWidth > availableWidth - padding) {
-        const widthScale = (availableWidth - padding) / buildingWidth;
-        scale = Math.min(scale, widthScale);
-    }
-
-    if (scale < 1) {
-        building.style.transform = `scale(${scale})`;
-    }
-}
-
-window.addEventListener('resize', adjustBuildingScale);
-window.addEventListener('load', adjustBuildingScale);
-// Call immediately in case load already fired
-adjustBuildingScale();
+// Resize Logic
+// We only need to update the lift position because CSS flexbox handles the building size now.
+window.addEventListener('resize', () => {
+    updateLiftPosition();
+});
+// Initial call
+updateLiftPosition();
