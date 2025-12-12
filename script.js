@@ -28,7 +28,7 @@ function clearInput() {
 
 function updateVirtualScreen() {
     if (commandSequence === "") {
-        virtualScreen.innerText = "_";
+        virtualScreen.innerText = "";
         virtualScreen.style.opacity = "0.5";
     } else {
         virtualScreen.innerText = commandSequence;
@@ -173,7 +173,7 @@ function showGuideMessage(text) {
 
 function guideSequence() {
     // Step 1: Intro
-    showGuideMessage("Hello! I am your Guide. 👋<br><br>To go UP use <b>+</b>.<br>To go DOWN use <b>-</b>.");
+    showGuideMessage("Hello! I am your Guide. 👋<br><br>To go UP use <b>↑</b>.<br>To go DOWN use <b>↓</b>.");
 
     // Step 2: Task Assignment (after delay)
     setTimeout(() => {
