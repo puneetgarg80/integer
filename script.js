@@ -3,6 +3,8 @@ let currentLevel = 0;
 const maxLevel = 6;   // Space
 const minLevel = -5;  // Dinosaur
 let inputMode = 'CLASSIC'; // CLASSIC or NUMERIC
+let labeledFloors = new Set([0]); // Always know ground
+let originalLabels = {}; // Store original text
 
 let commandSequence = ""; // Virtual input state
 
@@ -187,7 +189,116 @@ async function startJourney() {
     checkMissionStatus();
 }
 
+
+// --- Labeling Mission Helper Functions ---
+
+function saveOriginalLabels() {
+    floors.forEach(f => {
+        const level = parseInt(f.getAttribute('data-level'));
+        if (!originalLabels[level]) {
+            originalLabels[level] = f.innerText;
+        }
+    });
+}
+
+function maskFloorLabels() {
+    saveOriginalLabels();
+    floors.forEach(f => {
+        const level = parseInt(f.getAttribute('data-level'));
+        if (!labeledFloors.has(level)) {
+            f.innerText = `[ ? ]`;
+        }
+    });
+}
+
+function revealLabel(level) {
+    if (!originalLabels[level]) return; // Safety
+
+    labeledFloors.add(level);
+    const floor = document.querySelector(`.floor[data-level='${level}']`);
+
+    if (floor) {
+        let prefix = "";
+        if (level > 0) prefix = "↑";
+        if (level < 0) prefix = "↓";
+
+        // e.g. "↑2 Art Centre 🎨"
+        floor.innerText = `${prefix}${Math.abs(level)} ${originalLabels[level]}`;
+        floor.classList.add('revealed-anim'); // Optional hooks
+    }
+}
+
+function submitLabel() {
+    const command = commandSequence;
+    if (!command) {
+        alert("Enter a floor number first!");
+        return;
+    }
+
+    // Parse input (handles "↑2", "2", "↓2", "-2", etc.)
+    // We can reuse the logic from numeric mode or just simple parsing
+    // User might input via arrows (CLSSSIC) or numbers (NUMERIC)
+    // CLASSIC: "↑↑" -> +2
+
+    let userVal = 0;
+
+    // Check if it's arrow sequence or numeric string
+    if (command.includes('↑') || command.includes('↓')) {
+        // Could be "↑↑" (Classic) or "↑2" (Numeric)
+        const ups = (command.match(/↑/g) || []).length;
+        const downs = (command.match(/↓/g) || []).length;
+
+        // If numeric digits exist, trust them + direction
+        const digits = command.match(/\d+/);
+        if (digits) {
+            // Numeric mode style "↑2"
+            const num = parseInt(digits[0]);
+            if (command.includes('↓')) userVal = -num;
+            else userVal = num;
+        } else {
+            // Classic arrow count
+            userVal = ups - downs;
+        }
+    } else {
+        // Just numbers "2" or "-2"
+        userVal = parseInt(command);
+    }
+
+    if (isNaN(userVal)) {
+        alert("Invalid Floor Number!");
+        clearInput();
+        return;
+    }
+
+    // Validate
+    if (userVal === currentLevel) {
+        // Correct!
+        statusDisplay.innerText = "CORRECT! 🎉";
+        statusDisplay.style.color = "#00E676";
+
+        revealLabel(currentLevel);
+
+        // Refresh State
+        checkMissionStatus();
+
+        setTimeout(() => {
+            statusDisplay.innerText = `Level: ${currentLevel > 0 ? '+' : ''}${currentLevel}`;
+            statusDisplay.style.color = ""; // reset
+        }, 2000);
+    } else {
+        statusDisplay.innerText = "WRONG! ❌";
+        statusDisplay.style.color = "red";
+        setTimeout(() => {
+            statusDisplay.innerText = "Try Again";
+            statusDisplay.style.color = "";
+        }, 1500);
+    }
+
+    clearInput();
+}
+
 // --- Guide Logic ---
+
 const guideText = document.getElementById('guide-text');
 let missionState = 'INTRO'; // INTRO, MOVING_TO_ART, COMPLETED
 
@@ -220,7 +331,42 @@ function guideSequence() {
 }
 
 function checkMissionStatus() {
-    if (missionState === 'MOVING_TO_ART') {
+    console.log("Checking mission status:", missionState, "Current Level:", currentLevel);
+
+    const labelBtn = document.getElementById('label-btn');
+    if (labelBtn) labelBtn.style.display = 'none'; // Hide by default
+
+    if (missionState === 'LABELLING_INTRO') {
+        // Reveal 0, 1, 2 as per story
+        labeledFloors.add(0);
+        labeledFloors.add(1);
+        labeledFloors.add(2);
+
+        revealLabel(0);
+        revealLabel(1);
+        revealLabel(2);
+        maskFloorLabels(); // Mask others
+
+        missionState = 'LABELLING_TASK';
+        showGuideMessage("I've revealed floors 0, ↑1, and ↑2.<br>Visit other floors and assign numbers!");
+    }
+    else if (missionState === 'LABELLING_TASK') {
+        // Check if current floor is unlabelled
+        if (!labeledFloors.has(currentLevel)) {
+            showGuideMessage(`We are at a hidden floor.<br>What number should this be?`);
+            if (labelBtn) labelBtn.style.display = 'inline-block'; // Show Label Button
+        } else {
+            if (labeledFloors.size === floors.length) {
+                missionState = 'COMPLETED';
+                showGuideMessage("Amazing! You've labeled the whole building! 🎉");
+            } else {
+                showGuideMessage("This floor is labeled.<br>Find a <b>[ ? ]</b> floor!");
+            }
+        }
+    }
+
+    else if (missionState === 'MOVING_TO_ART') {
+
         if (currentLevel === 2) {
             showGuideMessage("🌟 Excellent work!<br>You reached the Art Centre!");
             setTargetHighlight(null);
@@ -287,7 +433,16 @@ function checkMissionStatus() {
     } else if (missionState === 'MOVING_DOWN_3_NEW') {
         if (currentLevel === -3) {
             showGuideMessage("🎬 Perfect!<br>Welcome to the Cinema!");
-            missionState = 'COMPLETED';
+
+            // Transition to Story Mode for Labeling
+            setTimeout(() => {
+                showGuideMessage("Wait... Bela has a new idea! 💡");
+                setTimeout(() => {
+                    missionState = 'LABELLING_INTRO';
+                    checkMissionStatus();
+                }, 3000);
+            }, 3000);
+
             setTargetHighlight(null);
         } else {
             showGuideMessage("Not quite.<br>Press <b>↓</b> then <b>3</b>.");
@@ -336,6 +491,13 @@ function initFromParams() {
             setTargetHighlight(-3);
             upgradeToNumeric(); // Force upgrade UI
             showGuideMessage("Dev Mode: Jumped to <b>MOVING_DOWN_3_NEW</b>.<br>.");
+            break;
+        case 'LABELLING_INTRO':
+            currentLevel = 0;
+            saveOriginalLabels();
+            setTimeout(() => {
+                checkMissionStatus(); // Trigger the Intro Logic
+            }, 1000);
             break;
         case 'COMPLETED':
             showGuideMessage("Dev Mode: Jumped to <b>COMPLETED</b>.");

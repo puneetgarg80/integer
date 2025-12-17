@@ -461,6 +461,21 @@ body {
     cursor: not-allowed;
 }
 
+.label-btn {
+    background: radial-gradient(circle at 30% 30%, #42A5F5, #1976D2);
+    border-color: #0D47A1;
+    box-shadow: 0 6px #0D47A1, 0 10px 20px rgba(0, 0, 0, 0.3);
+    margin-left: 10px;
+    margin-top: 0 !important;
+    display: none;
+    /* Default hidden, but controlled by JS usually */
+}
+
+.label-btn:active {
+    box-shadow: 0 0 #0D47A1;
+}
+
+
 /* --- Guide Interface --- */
 .guide-container {
     /* position: absolute; removed to prevent overlap */
